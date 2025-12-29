@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>مواقيت الصلاة</title>
+
+  <!-- iOS Home Screen support -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f7f7f7;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      font-size: 28px;
+      margin-bottom: 25px;
+    }
+    .time {
+      font-size: 24px;
+      margin: 12px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🕌 مواقيت الصلاة</h1>
+  <div id="times">جاري التحميل…</div>
+
+  <script>
+    fetch("https://api.aladhan.com/v1/timingsByCity?city=Istanbul&country=Turkey&method=13")
+      .then(res => res.json())
+      .then(data => {
+        const t = data.data.timings;
+        document.getElementById("times").innerHTML = `
+          <div class="time">الفجر: ${t.Fajr}</div>
+          <div class="time">الظهر: ${t.Dhuhr}</div>
+          <div class="time">العصر: ${t.Asr}</div>
+          <div class="time">المغرب: ${t.Maghrib}</div>
+          <div class="time">العشاء: ${t.Isha}</div>
+        `;
+      })
+      .catch(() => {
+        document.getElementById("times").innerText = "فشل تحميل المواقيت";
+      });
+  </script>
+
+</body>
+</html>
