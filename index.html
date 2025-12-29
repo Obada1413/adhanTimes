@@ -17,18 +17,25 @@
       padding: 20px;
     }
     h1 {
-      font-size: 28px;
+      font-size: 34px; /* bigger title */
+      margin-bottom: 20px;
+    }
+    .next {
+      font-size: 26px;
+      font-weight: bold;
       margin-bottom: 25px;
+      color: #2c5f2d;
     }
     .time {
-      font-size: 24px;
-      margin: 12px 0;
+      font-size: 28px; /* bigger prayer times */
+      margin: 14px 0;
     }
   </style>
 </head>
 <body>
 
   <h1>🕌 مواقيت الصلاة</h1>
+  <div id="next" class="next">جاري الحساب…</div>
   <div id="times">جاري التحميل…</div>
 
   <script>
@@ -36,16 +43,53 @@
       .then(res => res.json())
       .then(data => {
         const t = data.data.timings;
-        document.getElementById("times").innerHTML = `
-          <div class="time">الفجر: ${t.Fajr}</div>
-          <div class="time">الظهر: ${t.Dhuhr}</div>
-          <div class="time">العصر: ${t.Asr}</div>
-          <div class="time">المغرب: ${t.Maghrib}</div>
-          <div class="time">العشاء: ${t.Isha}</div>
-        `;
+
+        const prayers = [
+          { name: "الفجر", time: t.Fajr },
+          { name: "الظهر", time: t.Dhuhr },
+          { name: "العصر", time: t.Asr },
+          { name: "المغرب", time: t.Maghrib },
+          { name: "العشاء", time: t.Isha }
+        ];
+
+        // Show prayer times
+        document.getElementById("times").innerHTML = prayers
+          .map(p => `<div class="time">${p.name}: ${p.time}</div>`)
+          .join("");
+
+        // Calculate next prayer
+        const now = new Date();
+
+        let nextPrayer = null;
+        for (const p of prayers) {
+          const [h, m] = p.time.split(":");
+          const prayerTime = new Date();
+          prayerTime.setHours(h, m, 0, 0);
+
+          if (prayerTime > now) {
+            nextPrayer = { name: p.name, time: prayerTime };
+            break;
+          }
+        }
+
+        // If after Isha → next is Fajr tomorrow
+        if (!nextPrayer) {
+          const [h, m] = prayers[0].time.split(":");
+          const prayerTime = new Date();
+          prayerTime.setDate(prayerTime.getDate() + 1);
+          prayerTime.setHours(h, m, 0, 0);
+          nextPrayer = { name: prayers[0].name, time: prayerTime };
+        }
+
+        const diffMs = nextPrayer.time - now;
+        const diffMin = Math.floor(diffMs / 60000);
+
+        document.getElementById("next").innerText =
+          `باقي ${diffMin} دقيقة على صلاة ${nextPrayer.name}`;
       })
       .catch(() => {
         document.getElementById("times").innerText = "فشل تحميل المواقيت";
+        document.getElementById("next").innerText = "";
       });
   </script>
 
