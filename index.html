@@ -83,9 +83,22 @@
 
         const diffMs = nextPrayer.time - now;
         const diffMin = Math.floor(diffMs / 60000);
-
+        const hours = Math.floor(diffMin / 60);
+        const minutes = diffMin % 60;
+      
+        let timeText = "";
+      
+        if (hours > 0 && minutes > 0) {
+          timeText = `${hours} ساعة و ${minutes} دقيقة`;
+        } else if (hours > 0) {
+          timeText = `${hours} ساعة`;
+        } else {
+          timeText = `${minutes} دقيقة`;
+        }
+      
         document.getElementById("next").innerText =
-          `باقي ${diffMin} دقيقة على صلاة ${nextPrayer.name}`;
+          `باقي ${timeText} على صلاة ${nextPrayer.name}`;
+
       })
       .catch(() => {
         document.getElementById("times").innerText = "فشل تحميل المواقيت";
