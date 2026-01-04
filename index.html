@@ -50,6 +50,16 @@
       const arabicNums = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
       return text.replace(/\d/g, d => arabicNums[d]);
     }
+    function formatTime12h(time24) {
+      let [h, m] = time24.split(":").map(Number);
+    
+      // Convert 24h → 12h
+      h = h % 12;
+      if (h === 0) h = 12;
+    
+      const formatted = `${h}:${m.toString().padStart(2, "0")}`;
+      return toArabicNumbers(formatted);
+    }
 
     function loadPrayerTimes() {
       fetch("https://api.aladhan.com/v1/timingsByCity?city=Istanbul&country=Turkey&method=13")
@@ -68,7 +78,7 @@
 
           // Show prayer times
           document.getElementById("times").innerHTML = prayers
-            .map(p => `<div class="time">${p.name}: ${toArabicNumbers(p.time)}</div>`)
+            .map(p => `<div class="time">${p.name}: ${formatTime12h(p.time)}</div>`)
             .join("");
 
           const now = new Date();
