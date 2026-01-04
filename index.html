@@ -16,19 +16,25 @@
       text-align: center;
       padding: 20px;
     }
+
+    /* 🔹 TITLE SIZE */
     h1 {
-      font-size: 38px;
-      margin-bottom: 20px;
+      font-size: 42px; /* BIGGER */
+      margin-bottom: 25px;
     }
+
+    /* 🔹 COUNTDOWN TEXT */
     .next {
-      font-size: 30px;
+      font-size: 34px; /* BIGGER */
       font-weight: bold;
-      margin-bottom: 30px;
+      margin-bottom: 35px;
       color: #1f5f3b;
     }
+
+    /* 🔹 PRAYER TIMES TEXT */
     .time {
-      font-size: 32px;
-      margin: 18px 0;
+      font-size: 36px; /* BIGGER */
+      margin: 20px 0;
     }
   </style>
 </head>
@@ -39,6 +45,12 @@
   <div id="times">جاري التحميل…</div>
 
   <script>
+    // 🔢 Convert English numbers to Arabic numerals
+    function toArabicNumbers(text) {
+      const arabicNums = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+      return text.replace(/\d/g, d => arabicNums[d]);
+    }
+
     function loadPrayerTimes() {
       fetch("https://api.aladhan.com/v1/timingsByCity?city=Istanbul&country=Turkey&method=13")
         .then(res => res.json())
@@ -47,14 +59,16 @@
 
           const prayers = [
             { name: "الفجر", time: t.Fajr },
+            { name: "الشروق", time: t.Sunrise }, // 🌅 ADDED
             { name: "الظهر", time: t.Dhuhr },
             { name: "العصر", time: t.Asr },
             { name: "المغرب", time: t.Maghrib },
             { name: "العشاء", time: t.Isha }
           ];
 
+          // Show prayer times
           document.getElementById("times").innerHTML = prayers
-            .map(p => `<div class="time">${p.name}: ${p.time}</div>`)
+            .map(p => `<div class="time">${p.name}: ${toArabicNumbers(p.time)}</div>`)
             .join("");
 
           const now = new Date();
@@ -93,7 +107,7 @@
           }
 
           document.getElementById("next").innerText =
-            `باقي ${timeText} على صلاة ${nextPrayer.name}`;
+            toArabicNumbers(`باقي ${timeText} على صلاة ${nextPrayer.name}`);
         });
     }
 
